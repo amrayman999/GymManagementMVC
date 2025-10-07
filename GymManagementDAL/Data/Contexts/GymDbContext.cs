@@ -1,5 +1,4 @@
-﻿
-using GymManagementDAL.Entities;
+﻿using GymManagementDAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -7,10 +6,10 @@ namespace GymManagementDAL.Data.Contexts
 {
     public class GymDbContext : DbContext
     {
-        public GymDbContext(DbContextOptions<GymDbContext> options) : base(options)
-        {
+        //public GymDbContext(DbContextOptions<GymDbContext> options) : base(options)
+        //{
 
-        }
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
