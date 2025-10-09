@@ -37,12 +37,61 @@ namespace GymManagementBLL.Services.Classes
             return memberViewModels;
         }
 
+        public bool CreateMember(CreateMemberViewModel model)
+        {
+           try
+            {
+                if (IsEmailExists(model.Email))
+                    return false;
+                if (IsPhoneExists(model.Phone))
+                    return false;
+
+                var member = new Member
+                {
+                    Name = model.Name,
+                    Email = model.Email,
+                    Phone = model.Phone,
+                    DateOfBirth = model.DateOfBirth,
+                    Gender = model.Gender,
+                    Address = new Address
+                    {
+                        BuildingNumber = model.BuildingNumber,
+                        City = model.City,
+                        Street = model.Street
+                    },
+                    HealthRecord = new HealthRecord
+                    {
+                        Height = model.HealthRecordViewModel.Height,
+                        Weight = model.HealthRecordViewModel.Weight,
+                        BloodType = model.HealthRecordViewModel.BloodType,
+                        Note = model.HealthRecordViewModel.Note
+                    }
+                };
+                _memberRepository.Add(member);
+                return true;
+            }
+            catch(Exception)
+            {
+                return false;
+            }
+        }
+
         #region Helper Methods
         private string FormatAddress(Address address)
         {
             if (address is null)
                 return string.Empty;
             return $"{address.BuildingNumber}, {address.Street}, {address.City}";
+        }
+        private bool IsEmailExists(string email)
+        {
+            var existingMember = _memberRepository.GetAll(x => x.Email.ToLower() == email.ToLower());
+            return existingMember is not null && existingMember.Any();
+        }
+        private bool IsPhoneExists(string phone)
+        {
+            var existingMember = _memberRepository.GetAll(x => x.Phone == phone);
+            return existingMember is not null && existingMember.Any();
         }
         #endregion
     }
