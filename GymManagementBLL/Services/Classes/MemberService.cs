@@ -195,6 +195,7 @@ namespace GymManagementBLL.Services.Classes
             };
             return memberToUpdateViewModel;
         }
+
         #region Helper Methods
         private string FormatAddress(Address address)
         {
