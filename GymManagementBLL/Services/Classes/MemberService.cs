@@ -132,7 +132,47 @@ namespace GymManagementBLL.Services.Classes
             };
             
         }
+        public bool UpdateMemberDetails(int memberId, MemberToUpdateViewModel model)
+        {
 
+            var member = _memberRepository.GetById(memberId);
+            if (member is null)
+                return false;
+            if (IsEmailExists(model.Email))
+                return false;
+            if (IsPhoneExists(model.Phone))
+                return false;
+
+            member.Name = model.Name;
+            member.Email = model.Email;
+            member.Phone = model.Phone;
+            member.Address.BuildingNumber = model.BuildingNumber;
+            member.Address.City = model.City;
+            member.Address.Street = model.Street;
+            member.UpdatedAt = DateTime.Now;
+
+            _memberRepository.Update(member);
+            return true;
+
+        }
+        public MemberToUpdateViewModel? GetMemberToUpdate(int memberId)
+        {
+            var member = _memberRepository.GetById(memberId);
+            if (member is null)
+                return null;
+
+            var memberToUpdateViewModel = new MemberToUpdateViewModel
+            {
+                Photo = member.Photo,
+                Name = member.Name,
+                Email = member.Email,
+                Phone = member.Phone,
+                BuildingNumber = member.Address.BuildingNumber,
+                Street = member.Address.Street,
+                City = member.Address.City,
+            };
+            return memberToUpdateViewModel;
+        }
         #region Helper Methods
         private string FormatAddress(Address address)
         {
