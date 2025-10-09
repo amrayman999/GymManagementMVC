@@ -17,17 +17,20 @@ namespace GymManagementBLL.Services.Classes
         private readonly IGenericRepository<Membership> _membershipRepository;
         private readonly IGenericRepository<Plan> _planRepository;
         private readonly IGenericRepository<HealthRecord> _healthRecordRepository;
+        private readonly IGenericRepository<Booking> _bookingRepository;
 
         public MemberService(
             IGenericRepository<Member> memberRepository,
             IGenericRepository<Membership> membershipRepository,
             IGenericRepository<Plan> planRepository,
-            IGenericRepository<HealthRecord> healthRecordRepository) 
+            IGenericRepository<HealthRecord> healthRecordRepository,
+            IGenericRepository<Booking> bookingRepository) 
         { 
             _memberRepository = memberRepository;
             _membershipRepository = membershipRepository;
             _planRepository = planRepository;
             _healthRecordRepository = healthRecordRepository;
+            _bookingRepository = bookingRepository;
         }
         public IEnumerable<MemberViewModel> GetAllMembers()
         {
@@ -189,6 +192,39 @@ namespace GymManagementBLL.Services.Classes
         {
             var existingMember = _memberRepository.GetAll(x => x.Phone == phone);
             return existingMember is not null && existingMember.Any();
+        }
+
+        public bool RemoveMember(int memberId)
+        {
+            var member = _memberRepository.GetById(memberId);
+            if (member is null)
+                return false;
+
+            var activeBookings = _bookingRepository
+                .GetAll(x => x.MemberId == memberId && x.Session.StartDate > DateTime.UtcNow);
+
+            if (activeBookings.Any())
+                return false;
+
+            var memberships = _membershipRepository.GetAll(x => x.MemberId == memberId).ToList();
+
+            try
+            {
+                if (memberships.Any())
+                {
+                   foreach(var membership in memberships)
+                    {
+                        _membershipRepository.Delete(membership);
+                    }
+                }
+                _memberRepository.Delete(member);
+                return true;
+
+            }
+            catch(Exception)
+            {
+                return false;
+            }
         }
         #endregion
     }
