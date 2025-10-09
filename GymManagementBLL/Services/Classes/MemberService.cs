@@ -2,6 +2,7 @@
 using GymManagementBLL.ViewModels.MemberViewModels;
 using GymManagementDAL.Entities;
 using GymManagementDAL.Repositories.Classes;
+using GymManagementDAL.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,18 @@ namespace GymManagementBLL.Services.Classes
 {
     public class MemberService : IMemberService
     {
-        private readonly GenericRepository<Member> _memberRepository;
+        private readonly IGenericRepository<Member> _memberRepository;
+        private readonly IGenericRepository<Membership> _membershipRepository;
+        private readonly IGenericRepository<Plan> _planRepository;
 
-        public MemberService(GenericRepository<Member> memberRepository) 
+        public MemberService(
+            IGenericRepository<Member> memberRepository,
+            IGenericRepository<Membership> membershipRepository,
+            IGenericRepository<Plan> planRepository) 
         { 
             _memberRepository = memberRepository;
+            _membershipRepository = membershipRepository;
+            _planRepository = planRepository;
         }
         public IEnumerable<MemberViewModel> GetAllMembers()
         {
@@ -36,7 +44,6 @@ namespace GymManagementBLL.Services.Classes
             });
             return memberViewModels;
         }
-
         public bool CreateMember(CreateMemberViewModel model)
         {
            try
@@ -74,6 +81,37 @@ namespace GymManagementBLL.Services.Classes
             {
                 return false;
             }
+        }
+        public MemberViewModel? GetMemberDetails(int memberId)
+        {
+            var member = _memberRepository.GetById(memberId);
+            if (member is null)
+                return null;
+
+            var memberViewModel = new MemberViewModel
+            {
+                Id = member.Id,
+                Photo = member.Photo,
+                Name = member.Name,
+                Email = member.Email,
+                Phone = member.Phone,
+                DateOfBirth = member.DateOfBirth.ToShortDateString(),
+                Gender = member.Gender.ToString(),
+                Address = FormatAddress(member.Address),
+            };
+
+            var activeMembership = _membershipRepository
+                                    .GetAll(x => x.MemberId == member.Id && x.Status == "Active")
+                                    .FirstOrDefault();
+            if (activeMembership is not null)
+            {
+                var activePlan = _planRepository.GetById(activeMembership.PlanId);
+                memberViewModel.PlanName = activePlan?.Name;
+                memberViewModel.MembershipStartDate = activeMembership.CreatedAt.ToShortDateString();
+                memberViewModel.MembershipEndDate = activeMembership.EndDate.ToShortDateString();
+            }
+            return memberViewModel;
+
         }
 
         #region Helper Methods
