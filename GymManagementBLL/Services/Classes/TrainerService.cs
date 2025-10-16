@@ -48,6 +48,7 @@ namespace GymManagementBLL.Services.Classes
 
                 };
                 _unitOfWork.GetRepository<Trainer>().Add(trainer);
+                _unitOfWork.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -122,7 +123,8 @@ namespace GymManagementBLL.Services.Classes
             try
             { 
                _unitOfWork.GetRepository<Trainer>().Delete(trainer);
-               return true;
+                _unitOfWork.SaveChanges();
+                return true;
 
             }
             catch (Exception)
@@ -149,6 +151,7 @@ namespace GymManagementBLL.Services.Classes
             trainer.UpdatedAt = DateTime.Now;
 
             _unitOfWork.GetRepository<Trainer>().Update(trainer);
+            _unitOfWork.SaveChanges();
             return true;
         }
 
