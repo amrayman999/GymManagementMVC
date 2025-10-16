@@ -1,14 +1,14 @@
 ﻿using GymManagementDAL.Entities;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace GymManagementDAL.Repositories.Interfaces
 {
-    public interface ITrainerRepository
+    public interface ITrainerRepository : IGenericRepository<Trainer>
     {
-        Trainer? GetById(int id);
-        IEnumerable<Trainer> GetAll();
-        int Add(Trainer member);
-        int Update(Trainer member);
-        int Delete(int id);
+        IEnumerable<Session> GetAllSessions(int trainerId);
     }
 }

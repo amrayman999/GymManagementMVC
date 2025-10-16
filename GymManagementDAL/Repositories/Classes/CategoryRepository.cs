@@ -9,38 +9,10 @@ using System.Threading.Tasks;
 
 namespace GymManagementDAL.Repositories.Classes
 {
-    public class CategoryRepository : ICategoryRepository
+    public class CategoryRepository : GenericRepository<Category>
     {
-        private readonly GymDbContext _context;
-
-        public CategoryRepository(GymDbContext context)
+        public CategoryRepository(GymDbContext context) : base(context)
         {
-            _context = context;
-        }
-        public int Add(Category category)
-        {
-            _context.Categories.Add(category);
-            return _context.SaveChanges();
-        }
-        public int Delete(int id)
-        {
-            var category = GetById(id);
-            if (category != null)
-            {
-                _context.Categories.Remove(category);
-                return _context.SaveChanges();
-            }
-            return 0;
-
-
-        }
-        public IEnumerable<Category> GetAll() => _context.Categories.ToList();
-        public Category? GetById(int id) => _context.Categories.Find(id);
-        public int Update(Category category)
-        {
-            _context.Categories.Update(category);
-            return _context.SaveChanges();
-
         }
     }
 }
