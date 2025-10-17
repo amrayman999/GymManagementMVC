@@ -15,6 +15,7 @@ namespace GymManagementPL.Controllers
 
         public IActionResult Index()
         {
+
             return View();
         }
 
