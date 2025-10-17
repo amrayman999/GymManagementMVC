@@ -6,7 +6,8 @@ namespace GymManagementPL.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            int x = 10;
+            return View(x);
         }
     }
 }
