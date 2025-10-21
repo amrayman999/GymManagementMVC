@@ -82,10 +82,13 @@ namespace GymManagementBLL.Services.Classes
             var member = _unitOfWork.GetRepository<Member>().GetById(memberId);
             if (member is null)
                 return false;
-            if (IsEmailExists(model.Email))
+
+            var emailExist = _unitOfWork.GetRepository<Member>().GetAll(x => x.Email == model.Email && x.Id != memberId);
+            var phoneExist = _unitOfWork.GetRepository<Member>().GetAll(x => x.Phone == model.Phone && x.Id != memberId);
+
+            if (emailExist.Any() || phoneExist.Any())
                 return false;
-            if (IsPhoneExists(model.Phone))
-                return false;
+
 
             member.Name = model.Name;
             member.Email = model.Email;
