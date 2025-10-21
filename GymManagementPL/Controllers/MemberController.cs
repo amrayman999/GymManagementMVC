@@ -13,6 +13,8 @@ namespace GymManagementPL.Controllers
         public IActionResult Index()
         {
             var members = _memberService.GetAllMembers();
+            //ViewBag.Message = "Hello";
+            //ViewData["Welcome"] = "Hello Members";
             return View(members);
         }
         public IActionResult MemberDetails(int id)
@@ -20,6 +22,7 @@ namespace GymManagementPL.Controllers
             var member = _memberService.GetMemberDetails(id);
             if (member is  null)
             {
+                TempData["ErrorMessage"] = "Member Not Found!";
                 return RedirectToAction(nameof(Index));
             }
             return View(member);
@@ -29,6 +32,7 @@ namespace GymManagementPL.Controllers
             var healthRecord = _memberService.GetMemberHealthRecord(id);
             if (healthRecord is null)
             {
+                TempData["ErrorMessage"] = "Member Not Found!";
                 return RedirectToAction(nameof(Index));
             }
             return View(healthRecord);
