@@ -83,5 +83,32 @@ namespace GymManagementPL.Controllers
                 TempData["ErrorMessage"] = "Member Failed To Update";
             return RedirectToAction(nameof(Index));
         }
+        public IActionResult Delete([FromRoute] int id)
+        {
+            if(id <= 0)
+            {
+                TempData["ErrorMessage"] = "Id Of Member Can Not Be Zero or Negative";
+                return RedirectToAction(nameof(Index));
+            }
+            var member = _memberService.GetMemberDetails(id);
+            if(member is null)
+            {
+                TempData["ErrorMessage"] = "Member Not found!";
+                return RedirectToAction(nameof(Index));
+            }
+            ViewBag.MemberId = id;
+            return View();
+        }
+        [HttpPost]
+        public IActionResult DeleteConfirmed([FromForm] int id)
+        {
+            var result = _memberService.RemoveMember(id);
+            if (result)
+                TempData["SuccessMessage"] = "Member Deleted Successfully";
+            else
+                TempData["ErrorMessage"] = "Member Cannot Be Deleted";
+            return RedirectToAction(nameof(Index));
+
+        }
     }
 }
