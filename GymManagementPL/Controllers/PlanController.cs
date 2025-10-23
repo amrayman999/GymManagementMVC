@@ -15,5 +15,18 @@ namespace GymManagementPL.Controllers
             var plans = _planService.GetAllPlans();
             return View(plans);
         }
+        public IActionResult Details(int id)
+        {
+            if(id <= 0)
+            {
+                return RedirectToAction("Index");
+            }
+            var plan = _planService.GetPlanById(id);
+            if(plan == null)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(plan);
+        }
     }
 }
