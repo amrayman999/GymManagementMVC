@@ -63,6 +63,42 @@ namespace GymManagementPL.Controllers
             }
             return View(session);
         }
+        public IActionResult Edit(int id)
+        {
+            if (id <= 0)
+            {
+                TempData["ErrorMessage"] = "Invalid Session Id";
+                return RedirectToAction("Index");
+            }
+            var session = _sessionService.GetSessionToUpdate(id);
+            if (session == null)
+            {
+                TempData["ErrorMessage"] = "Session not found.";
+                return RedirectToAction("Index");
+            }
+            LoadTrainersDropDown();
+            return View(session);
+        }
+        [HttpPost]
+        public IActionResult Edit([FromRoute] int id, UpdateSessionViewModel input)
+        {
+            if (!ModelState.IsValid)
+            {
+                LoadTrainersDropDown();
+                return View(input);
+            }
+            var result = _sessionService.UpdateSession(id, input);
+            if (result)
+            {
+                TempData["SuccessMessage"] = "Session updated successfully.";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to update session. Please try again.";
+                return View(input);
+            }
+        }
 
         #region Helper Methods
         public void LoadCategoriesDropDown()

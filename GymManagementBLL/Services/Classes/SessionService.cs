@@ -68,7 +68,10 @@ namespace GymManagementBLL.Services.Classes
             if (!IsValidDateRange(input.StartDate, input.EndDate))
                 return false;
 
-            _mapper.Map<Session>(input);
+            session.TrainerId = input.TrainerId;
+            session.Description = input.Description;
+            session.StartDate = input.StartDate;
+            session.EndDate = input.EndDate;
             session.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.GetRepository<Session>().Update(session);
             return _unitOfWork.SaveChanges() > 0;
