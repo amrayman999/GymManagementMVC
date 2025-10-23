@@ -100,6 +100,34 @@ namespace GymManagementPL.Controllers
             }
         }
 
+        public IActionResult Delete([FromRoute] int id)
+        {
+            if (id <= 0)
+            {
+                TempData["ErrorMessage"] = "Id Of Session Can Not Be Zero or Negative";
+                return RedirectToAction(nameof(Index));
+            }
+            var session = _sessionService.GetSessionById(id);
+            if (session is null)
+            {
+                TempData["ErrorMessage"] = "Session Not found!";
+                return RedirectToAction(nameof(Index));
+            }
+            ViewBag.SessionId = id;
+            return View();
+        }
+        [HttpPost]
+        public IActionResult DeleteConfirmed([FromForm] int id)
+        {
+            var result = _sessionService.RemoveSession(id);
+            if (result)
+                TempData["SuccessMessage"] = "Session Deleted Successfully";
+            else
+                TempData["ErrorMessage"] = "Session Cannot Be Deleted";
+            return RedirectToAction(nameof(Index));
+
+        }
+
         #region Helper Methods
         public void LoadCategoriesDropDown()
         {
