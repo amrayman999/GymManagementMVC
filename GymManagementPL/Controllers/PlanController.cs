@@ -1,4 +1,5 @@
 ﻿using GymManagementBLL.Services.Interfaces;
+using GymManagementBLL.ViewModels.PlanViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagementPL.Controllers
@@ -19,14 +20,50 @@ namespace GymManagementPL.Controllers
         {
             if(id <= 0)
             {
+                TempData["ErrorMessage"] = "Invalid Plan Id";
                 return RedirectToAction("Index");
             }
             var plan = _planService.GetPlanById(id);
             if(plan == null)
             {
+                TempData["ErrorMessage"] = "Plan not found.";
                 return RedirectToAction("Index");
             }
             return View(plan);
+        }
+        public IActionResult Edit(int id)
+        {
+            if(id <= 0)
+            {
+                TempData["ErrorMessage"] = "Invalid Plan Id";
+                return RedirectToAction("Index");
+            }
+            var plan = _planService.GetPlanToUpdate(id);
+            if(plan == null)
+            {
+                TempData["ErrorMessage"] = "Plan Cannot be Updated.";
+                return RedirectToAction("Index");
+            }
+            return View(plan);
+        }
+        [HttpPost]
+        public IActionResult Edit([FromRoute] int id, UpdatePlanViewModel input)
+        {
+            if(!ModelState.IsValid)
+            {
+                ModelState.AddModelError("Wrong Data", "Check Data Validation");
+                return View(input);
+            }
+            var result = _planService.UpdatePlan(id, input);
+            if (result)
+            {
+                TempData["SuccessMessage"] = "Plan Updated Successfully";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed To Update Plan";
+            }
+            return RedirectToAction("Index");
         }
     }
 }
