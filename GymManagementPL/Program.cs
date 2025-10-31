@@ -1,4 +1,5 @@
 using GymManagementBLL;
+using GymManagementBLL.Services.AttachmentService;
 using GymManagementBLL.Services.Classes;
 using GymManagementBLL.Services.Interfaces;
 using GymManagementDAL.Data.Contexts;
@@ -7,6 +8,7 @@ using GymManagementDAL.Repositories.Classes;
 using GymManagementDAL.Repositories.Interfaces;
 using GymManagementSystemBLL.Services.Classes;
 using GymManagementSystemBLL.Services.Interfaces;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymManagementPL
@@ -31,6 +33,7 @@ namespace GymManagementPL
             builder.Services.AddScoped<IPlanService, PlanService>();
             builder.Services.AddScoped<ISessionService, SessionService>();
             builder.Services.AddScoped<ITrainerService, TrainerService>();
+            builder.Services.AddScoped<IAttachmentService, AttachmentService>();
             builder.Services.AddAutoMapper(x => x.AddProfile(new MappingProfile()));
             var app = builder.Build();
 
@@ -50,6 +53,15 @@ namespace GymManagementPL
             }
 
             app.UseHttpsRedirection();
+            var provider = new FileExtensionContentTypeProvider();
+            provider.Mappings[".jpeg"] = "image/jpeg";
+            provider.Mappings[".jpg"] = "image/jpeg";
+            provider.Mappings[".png"] = "image/png";
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                ContentTypeProvider = provider
+            });
             app.UseRouting();
 
             app.UseAuthentication();
