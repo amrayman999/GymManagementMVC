@@ -1,9 +1,11 @@
 ﻿using GymManagementBLL.Services.Interfaces;
 using GymManagementBLL.ViewModels.MemberViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagementPL.Controllers
 {
+    [Authorize(Roles = "SuperAdmin")]
     public class MemberController : Controller
     {
         private readonly IMemberService _memberService;
@@ -14,8 +16,6 @@ namespace GymManagementPL.Controllers
         public IActionResult Index()
         {
             var members = _memberService.GetAllMembers();
-            //ViewBag.Message = "Hello";
-            //ViewData["Welcome"] = "Hello Members";
             return View(members);
         }
         public IActionResult MemberDetails(int id)

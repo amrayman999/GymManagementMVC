@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace GymManagementDAL.DataSeed
+namespace GymManagementDAL.Data.DataSeed
 {
     public static class GymDataSeeding
     {

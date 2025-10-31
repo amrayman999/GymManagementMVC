@@ -1,38 +1,41 @@
 ﻿using GymManagementDAL.Data.Contexts;
 using GymManagementDAL.Entities;
 using GymManagementDAL.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GymManagementDAL.Repositories.Classes
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly GymDbContext _context;
+        public IMembershipRepository MembershipRepository { get; }
+        public ISessionRepository SessionRepository { get; }
+
+        public IBookingRepository BookingRepository { get; }
+
         private readonly Dictionary<string, object> repositories = [];
-        public ISessionRepository SessionRepository { get ; set ; }
-        public UnitOfWork(GymDbContext context, ISessionRepository sessionRepository) 
-        { 
-            _context = context;
+        private readonly GymDbContext _dbContext;
+        public UnitOfWork(GymDbContext dbContext,
+            IMembershipRepository membershipRepository,
+            ISessionRepository sessionRepository,
+            IBookingRepository bookingRepository)
+        {
+            _dbContext = dbContext;
+            MembershipRepository = membershipRepository;
             SessionRepository = sessionRepository;
+            BookingRepository = bookingRepository;
         }
 
 
         public IGenericRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
         {
-            var entityName = typeof(TEntity).Name;
-            if (repositories.TryGetValue(entityName, out object? value))
+            var typeName = typeof(TEntity).Name;
+            if (repositories.TryGetValue(typeName, out object? value))
                 return (IGenericRepository<TEntity>)value;
-
-            var repository = new GenericRepository<TEntity>(_context);
-            repositories.Add(entityName, repository);
-            return repository;
+            var Repo = new GenericRepository<TEntity>(_dbContext);
+            repositories[typeName] = Repo;
+            return Repo;
         }
 
-        public int SaveChanges() => _context.SaveChanges();
-
+        public int SaveChanges() => _dbContext.SaveChanges();
     }
 }
+
