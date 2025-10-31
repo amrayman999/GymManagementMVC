@@ -1,5 +1,4 @@
 ﻿
-
 namespace GymManagementDAL.Entities
 {
     public class Member : GymUser
