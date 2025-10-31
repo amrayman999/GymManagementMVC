@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using GymManagementBLL.ViewModels.MembershipViewModels;
 using GymManagementBLL.ViewModels.MemberViewModels;
 using GymManagementBLL.ViewModels.PlanViewModels;
 using GymManagementBLL.ViewModels.SessionViewModels;
@@ -9,11 +10,11 @@ namespace GymManagementBLL
 {
     public class MappingProfile : Profile
     {
-
         public MappingProfile()
         {
             MapTrainer();
             MapSession();
+            MapMemberships();
             MapMember();
             MapPlan();
         }
@@ -27,7 +28,10 @@ namespace GymManagementBLL
                     Street = src.Street,
                     City = src.City
                 }));
-            CreateMap<Trainer, TrainerViewModel>();
+            CreateMap<Trainer, TrainerViewModel>()
+                            .ForMember(dest => dest.Address,
+                            opt => opt.MapFrom(src => $"{src.Address.BuildingNumber} - {src.Address.Street} - {src.Address.City}"));
+
             CreateMap<Trainer, TrainerToUpdateViewModel>()
                 .ForMember(dist => dist.Street, opt => opt.MapFrom(src => src.Address.Street))
                 .ForMember(dist => dist.City, opt => opt.MapFrom(src => src.Address.City))
@@ -99,6 +103,21 @@ namespace GymManagementBLL
            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.Now));
 
         }
+        private void MapMemberships()
+        {
+            CreateMap<Membership, MemberShipForMemberViewModel>()
+                     .ForMember(dist => dist.MemberName, Option => Option.MapFrom(Src => Src.Member.Name))
+                     .ForMember(dist => dist.PlanName, Option => Option.MapFrom(Src => Src.Plan.Name))
+                     .ForMember(dist => dist.StartDate, Option => Option.MapFrom(X => X.CreatedAt));
 
+            CreateMap<Membership, MemberShipViewModel>()
+                     .ForMember(dist => dist.MemberName, Option => Option.MapFrom(Src => Src.Member.Name))
+                     .ForMember(dist => dist.PlanName, Option => Option.MapFrom(Src => Src.Plan.Name))
+                                          .ForMember(dist => dist.StartDate, Option => Option.MapFrom(X => X.CreatedAt));
+
+            CreateMap<CreateMemberShipViewModel, Membership>();
+            CreateMap<Member, MemberSelectListViewModel>();
+            CreateMap<Plan, PlanSelectListViewModel>();
+        }
     }
 }

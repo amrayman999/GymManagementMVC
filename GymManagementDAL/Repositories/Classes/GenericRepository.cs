@@ -23,7 +23,10 @@ namespace GymManagementDAL.Repositories.Classes
         {
             _context.Remove(entity);
         }
-
+        public bool Exists(Func<TEntity, bool> predicate)
+        {
+            return _context.Set<TEntity>().Any(predicate);
+        }
         public IEnumerable<TEntity> GetAll(Func<TEntity, bool>? condition = null)
         {
             if(condition is not null)
